@@ -1,0 +1,208 @@
+#include <SoftwareSerial.h>
+#include <NewPing.h>
+
+#define TRIG_PIN 7
+#define ECHO_PIN 6
+#define MAX_DISTANCE 200
+#define MOTOR_LEFT_FORWARD 8
+#define MOTOR_LEFT_BACKWARD 9
+#define MOTOR_RIGHT_FORWARD 10
+#define MOTOR_RIGHT_BACKWARD 11
+
+SoftwareSerial BTSerial(2, 3); // RX, TX
+NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
+
+void setup() {
+  Serial.begin(9600);
+  BTSerial.begin(9600);
+  pinMode(MOTOR_LEFT_FORWARD, OUTPUT);
+  pinMode(MOTOR_LEFT_BACKWARD, OUTPUT);
+  pinMode(MOTOR_RIGHT_FORWARD, OUTPUT);
+  pinMode(MOTOR_RIGHT_BACKWARD, OUTPUT);
+}
+
+void loop() {
+  if (BTSerial.available()) {
+    char command = BTSerial.read();
+    executeCommand(command);
+  }
+
+  unsigned int distance = sonar.ping_cm();
+  if (distance > 0 && distance < 15) {
+    stopMotors();
+  }
+}
+
+void executeCommand(char command) {
+  switch (command) {
+    case 'F':
+      moveForward();
+      break;
+    case 'B':
+      moveBackward();
+      break;
+    case 'L':
+      turnLeft();
+      break;
+    case 'R':
+      turnRight();
+      break;
+    case 'S':
+      stopMotors();
+      break;
+  }
+}
+
+void moveForward() {
+  digitalWrite(MOTOR_LEFT_FORWARD, HIGH);
+  digitalWrite(MOTOR_RIGHT_FORWARD, HIGH);
+  digitalWrite(MOTOR_LEFT_BACKWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_BACKWARD, LOW);
+}
+
+void moveBackward() {
+  digitalWrite(MOTOR_LEFT_FORWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_FORWARD, LOW);
+  digitalWrite(MOTOR_LEFT_BACKWARD, HIGH);
+  digitalWrite(MOTOR_RIGHT_BACKWARD, HIGH);
+}
+
+void turnLeft() {
+  digitalWrite(MOTOR_LEFT_FORWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_FORWARD, HIGH);
+  digitalWrite(MOTOR_LEFT_BACKWARD, HIGH);
+  digitalWrite(MOTOR_RIGHT_BACKWARD, LOW);
+}
+
+void turnRight() {
+  digitalWrite(MOTOR_LEFT_FORWARD, HIGH);
+  digitalWrite(MOTOR_RIGHT_FORWARD, LOW);
+  digitalWrite(MOTOR_LEFT_BACKWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_BACKWARD, HIGH);
+}
+
+void stopMotors() {
+  digitalWrite(MOTOR_LEFT_FORWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_FORWARD, LOW);
+  digitalWrite(MOTOR_LEFT_BACKWARD, LOW);
+  digitalWrite(MOTOR_RIGHT_BACKWARD, LOW);
+}
+
+
+
+
+import bluetooth
+
+# Adresa MAC a modulului Bluetooth
+bd_addr = "00:11:22:33:44:55"
+
+port = 1
+sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+sock.connect((bd_addr, port))
+
+def send_command(command):
+    sock.send(command)
+
+def move_forward():
+    send_command('F')
+
+def move_backward():
+    send_command('B')
+
+def turn_left():
+    send_command('L')
+
+def turn_right():
+    send_command('R')
+
+def stop():
+    send_command('S')
+
+# Exemplu de utilizare
+move_forward()
+time.sleep(2)
+stop()
+
+sock.close()
+
+
+
+
+
+
+int ldrPin = A0;
+
+void setup() {
+  Serial.begin(9600);
+}
+
+void loop() {
+  int ldrValue = analogRead(ldrPin);
+  Serial.print("Lumină: ");
+  Serial.println(ldrValue);
+  delay(1000);
+}
+int pirPin = 7;
+int ledPin = 13;
+
+void setup() {
+  pinMode(pirPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int pirState = digitalRead(pirPin);
+  if (pirState == HIGH) {
+    digitalWrite(ledPin, HIGH);
+    Serial.println("Mișcare detectată!");
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+  delay(1000);
+}
+
+const int trigPin = 9;
+const int echoPin = 10;
+
+void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  long duration;
+  int distance;
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  Serial.print("Distanță: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  delay(1000);
+}
+int touchPin = 2;
+int ledPin = 13;
+
+void setup() {
+  pinMode(touchPin, INPUT);
+  pinMode(ledPin, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int touchState = digitalRead(touchPin);
+  if (touchState == HIGH) {
+    digitalWrite(ledPin, HIGH);
+    Serial.println("Atingere detectată!");
+  } else {
+    digitalWrite(ledPin, LOW);
+  }
+  delay(1000);
+}
